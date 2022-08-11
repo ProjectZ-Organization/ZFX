@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZFX
+namespace ZFX.Cpu
 {
     internal class CPU
     {
