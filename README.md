@@ -3,17 +3,17 @@ The Z Framework source tree
 
 # What is this?
 The Z framework is an emulation framework written entirely in managed code
-It currently supports
+It currently supports:
 
 CPU
 
 RAM
 
-hard disk
+Hard disk
 
-display
+Display
 
-networking
+Networking
 
 Audio (WIP)
 
