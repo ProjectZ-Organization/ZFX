@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ZFX
 {
-    class Network
+    public class Network
     {
         public Network()
         {
