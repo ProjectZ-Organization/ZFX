@@ -1,7 +1,7 @@
 using System;
 
 namespace ZFX { 
-    class Audio
+    public class Audio
     {
         /// <summary>
         /// Play a certain Frequency
