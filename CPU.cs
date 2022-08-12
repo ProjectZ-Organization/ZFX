@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -7,24 +7,37 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZFX
+namespace ZCPU
 {
     public class CPU
     {
         ///<summary>
-        ///RAM array.
+        ///System initted
         ///</summary>
         public bool init = false;
+        /// <summary>
+        /// Locator to network
+        /// </summary>
         public Network Network;
-        public int[] RAM { get; private set; }
+        /// <summary>
+        /// RAM array
+        /// </summary>
+        public long[] RAM { get; private set; }
         ///<summary>
         ///Size of RAM in KB.
         ///</summary>
         public long bitsize { get; private set; }
+        /// <summary>
+        /// Current ring. Before init is true this is set to null
+        /// </summary>
+        public int? ring = null;
+        /// <summary>
+        /// The List of reserved indexes
+        /// </summary>
+        public long?[] RIL;
         ///<summary>
         ///Halt the system.
         ///</summary>
-        public bool devmode = false;
         public void hlt()
         {
             memclean(0, bitsize);
@@ -38,22 +51,26 @@ namespace ZFX
         ///</summary>
         public void memclean(int startIndex, long endIndex)
         {
-            for (int i = startIndex; i < endIndex; i++)
+            for(int i = startIndex; i < endIndex; i++)
             {
                 setMemLoc(i, 0);
             }
         }
+        /// <summary>
+        /// BSOD the system
+        /// </summary>
+        /// <param name="panicType">Type of panic, type: enum</param>
         public void panic(PanicType panicType)
         {
             Console.Clear();
             string pMsg = "";
-            switch (panicType)
+            switch(panicType)
             {
                 case PanicType.criticalerror:
                     pMsg = "Critical Error";
                     break;
                 case PanicType.gp:
-                    pMsg = "General Protection Fault";
+                    pMsg = "General Protection";
                     break;
                 case PanicType.matherror:
                     pMsg = "Math Error";
@@ -61,33 +78,80 @@ namespace ZFX
                 case PanicType.permdenied:
                     pMsg = "Permission Denied";
                     break;
+                case PanicType.ringinvalid:
+                    pMsg = "Invalid ring. Existing rings: 3, 0. Current Ring: " + rdI(1024) + ".";
+                    break;
             }
             Console.WriteLine("Error during execution\n{0}", pMsg);
             memclean(0, bitsize);
             Console.ReadLine();
             Environment.Exit(1);
         }
-        public int rdI(int index)
+        /// <summary>
+        /// Read index.
+        /// </summary>
+        /// <param name="index">Index to read</param>
+        /// <returns>Value of index (int)</returns>
+        public long rdI(long index)
         {
-            if (index < 0 || index > bitsize) { panic(PanicType.gp); return 0; }
+            if(index < 0 || index > bitsize) { panic(PanicType.gp); return 0; }
             return RAM[index];
         }
-        public int[] rd(int sindex, int eindex)
+        /// <summary>
+        /// Reserves a certain index
+        /// </summary>
+        /// <param name="i">The index to reserve</param>
+        public void ReserveIndex(long i)
         {
-            int[] tmp = new int[eindex];
-            for (int i = sindex; i < eindex; i++)
+            if (i >= bitsize)
+            {
+                panic(PanicType.gp);
+                return;
+            }
+            RIL[i] = RAM[i];
+            RAM[i] = 0;
+        }
+        /// <summary>
+        /// Unreserves an index
+        /// </summary>
+        /// <param name="i">The index to unreserve</param>
+        public void UnreserveIndex(long i)
+        {
+            long? a = RIL[i];
+            RIL[i] = null;
+            RAM[i] = (long)a;
+        }
+        public bool IsReserved(long i)
+        {
+            return RIL[i] == 0;
+        }
+        /// <summary>
+        /// Reads an array of indexes
+        /// </summary>
+        public long[] rd(long sindex, long eindex)
+        {
+            long[] tmp = new long[eindex];
+            for(long i = sindex; i < eindex; i++)
             {
                 tmp[i] = RAM[i];
             }
             return tmp;
         }
+        /// <summary>
+        /// Pointer to the display class
+        /// </summary>
         public Display Display;
-        public int[] rd(int sindex = 0)
+        /// <summary>
+        /// Reads from starting index untill the end of the RAM (unless its 0, use at your own risk)
+        /// </summary>
+        /// <param name="sindex">Starting index, Default: 0</param>
+        /// <returns></returns>
+        public long[] rd(long sindex = 0)
         {
-            var tmp = new List<int>();
-            for (int i = sindex; i < bitsize; i++)
+            var tmp = new List<long>();
+            for (long i = sindex; i < bitsize; i++)
             {
-                if (RAM[i] == 0)
+                if(RAM[i] == 0)
                 {
                     break;
                 }
@@ -102,7 +166,7 @@ namespace ZFX
         ///<param name="to">Index to copy to</param>
         public void memcpy(long from, long to)
         {
-            if (from >= bitsize || to >= bitsize)
+            if(from >= bitsize || to >= bitsize)
             {
                 panic(PanicType.gp);
                 return;
@@ -136,6 +200,15 @@ namespace ZFX
         ///<param name="index">Index to set</param>
         ///<param name="val">Value</param>
         public void setMemLoc(long index, int val)
+        {
+            if(index >= bitsize || IsReserved(index))
+            {
+                panic(PanicType.gp);
+                return;
+            }
+            this.RAM[index] = val;
+        }
+        private void setReservedBit(long index, int val)
         {
             if (index >= bitsize)
             {
@@ -181,10 +254,9 @@ namespace ZFX
             }
             Console.Write('\n');
         }
-        //public void boot(Boot.BootLoader bl)
-        //{
-            //bl.RunFunc(this);
-        //}
+        /// <summary>
+        /// Clear the screen
+        /// </summary>
         public void clear()
         {
             Console.Clear();
@@ -217,7 +289,7 @@ namespace ZFX
         public void rde(long startIndex = 0)
         {
             string a = Console.ReadLine();
-            for (int i = 0; i < a.Length; i++)
+            for(int i = 0; i < a.Length; i++)
             {
                 setMemLoc(i + startIndex, a[i]);
             }
@@ -226,7 +298,7 @@ namespace ZFX
         /// Print string and save it to memory (from 0 to length of string)
         /// </summary>
         /// <param name="pr">String to print</param>
-        public void prnt(string pr)
+        public void prnt(string pr, bool _nl = true) 
         {
             for (int i = 0; i < pr.Length; i++)
             {
@@ -237,7 +309,14 @@ namespace ZFX
                 Console.Write((char)RAM[i]);
             }
             memclean(0, pr.Length);
+            if(_nl)
+            {
+                nl();
+            }
         }
+        /// <summary>
+        /// Gives a newline
+        /// </summary>
         public void nl()
         {
             Console.Write(Environment.NewLine);
@@ -249,11 +328,11 @@ namespace ZFX
         /// <param name="to">To (default:0)</param>
         public void prnt(int from = 0, int to = 0)
         {
-            if (to == 0)
+            if(to == 0)
             {
-                for (int i = from; i < bitsize; i++)
+                for(int i = from; i < bitsize; i++)
                 {
-                    if (RAM[i] == 0)
+                    if(RAM[i] == 0)
                     {
                         to = i;
                         break;
@@ -262,7 +341,7 @@ namespace ZFX
             }
             for (int i = from; i < to; i++)
             {
-                if (RAM[i] > 255)
+                if(RAM[i] > 255)
                 {
                     Console.Write("?");
                 }
@@ -270,6 +349,7 @@ namespace ZFX
                     Console.Write((char)RAM[i]);
             }
             Console.Write('\n');
+            nl();
         }
         /// <summary>
         /// Sum
@@ -335,38 +415,61 @@ namespace ZFX
         /// Init system
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
-        public CPU(long bitSystem = 2)
+        /// <param name="RILLENGTH">The amount of indexes possible to reserve</param>
+        
+        
+        public CPU(long bitSystem = 2, int ring = 3)
         {
-            initd(bitSystem * 1024);
+            initd(bitSystem * 1024, ring);
         }
-        public enum PanicType { criticalerror, gp, matherror, permdenied }
-        public void initd(long memsize)
+        /// <summary>
+        /// Enum for every panic scenario
+        /// </summary>
+        public enum PanicType{criticalerror, gp, matherror, permdenied, ringinvalid}
+        /// <summary>
+        /// Init function, Can only be run once. USE AT YOUR OWN RISK!
+        /// </summary>
+        /// <param name="memsize">Amount of memory to allocate</param>
+        /// <param name="ring">The ring you want to start the os in</param>
+        /// <param name="rilcsize">The size of the array RILC</param>
+        public void initd(long memsize, int? ring)
         {
             if (init)
             {
                 panic(PanicType.criticalerror);
                 Environment.Exit(1);
             }
-            long memtemp = memsize;
-            memtemp /= 1024;
-            if (memtemp / 1024 >= 1)
+            if (memsize <= 0)
             {
-                memtemp /= 1024;
-            }
-            if (memtemp / 1024 >= 1)
-            {
-                memtemp /= 1024;
-            }
-            if (memtemp <= 0)
-            {
-                Console.WriteLine("Not enough memory to load software.");
+                Console.WriteLine("Not enough memory to start software.");
                 Environment.Exit(1);
             }
-            RAM = new int[memsize];
+
+            RAM = new long[memsize];
             bitsize = memsize;
+
+            RIL = new long?[memsize];
+            for(int i = 0; i < memsize; i++)
+            {
+                RIL[i] = null;
+            }
             memclean(
                 0, bitsize);
+            if (ring == 3)
+            {
+                this.ring = 3;
+            }
+            else if (ring == 0)
+            {
+                this.ring = 0;
+            }
+            else
+            {
+                panic(PanicType.ringinvalid);
+            }
             init = true;
+            
         }
     }
 }
+
