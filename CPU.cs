@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ZFX
 {
-    internal class CPU
+    public class CPU
     {
         ///<summary>
         ///RAM array.
