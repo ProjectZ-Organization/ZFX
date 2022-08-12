@@ -1,2 +1,19 @@
 # ZFX
-The Z Framework
+The Z Framework source tree
+
+# What is this?
+The Z framework is an emulation framework written entirely in managed code
+It currently supports
+
+CPU
+
+RAM
+
+hard disk
+
+display
+
+networking
+
+Audio (WIP)
+
