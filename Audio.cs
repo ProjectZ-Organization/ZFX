@@ -1,6 +1,7 @@
 using System;
 
-namespace ZFX { 
+namespace ZFX 
+{ 
     public class Audio
     {
         /// <summary>
