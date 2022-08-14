@@ -340,40 +340,57 @@ namespace ZFX
         /// Init system
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
-        public CPU(long bitSystem = 2)
+        /// <param name"RILLENGTH">The amount of indexes possible</param>
+        public CPU(long bitSystem = 2, int ring = 3)
         {
-            initd(bitSystem * 1024);
+            initd(bitSystem * 1024, ring);
         }
-        public enum PanicType { criticalerror, gp, matherror, permdenied }
-        public void initd(long memsize)
-        {
-            Flags = new Flags();
-            Flags.DebugMessages = false;
-            if (init)
+        /// <summary>
+        /// Enum for every panic scenario
+        /// </summary>
+        public enum PanicType{criticalerror, gp, matherror, permdenied, ringinvalid}
+        /// <summary>
+        /// Init function, Can only be run once. USE AT YOUR OWN RISK!
+        /// </summary>
+        /// <param name="memsize">Amount of memory to allocate</param>
+        /// <param name="ring">The ring you want to start the os in</param>
+        /// <param name="rilcsize">The size of the array RILC</param>
+        public void initd(long memsize, int? ring)   
+        {         
+        if (init)
             {
                 panic(PanicType.criticalerror);
                 Environment.Exit(1);
             }
-            long memtemp = memsize;
-            memtemp /= 1024;
-            if (memtemp / 1024 >= 1)
-            {
-                memtemp /= 1024;
-            }
-            if (memtemp / 1024 >= 1)
-            {
-                memtemp /= 1024;
-            }
-            if (memtemp <= 0)
+            if (memsize <= 0)
             {
                 Console.WriteLine("Not enough memory to load software.");
                 Environment.Exit(1);
             }
-            RAM = new int[memsize];
+
+            RAM = new long[memsize];
             bitsize = memsize;
-            memclean(
-                0, bitsize);
+
+            RIL = new long?[memsize];
+            for(int i = 0; i < memsize; i++)
+            {
+                RIL[i] = null;
+            }
+            memclean(0, bitsize);
+            if (ring == 3)
+            {
+                this.ring = 3;
+            }
+            else if (ring == 0)
+            {
+                this.ring = 0;
+            }
+            else
+            {
+                panic(PanicType.ringinvalid);
+            }
             init = true;
+        
         }
     }
 }
