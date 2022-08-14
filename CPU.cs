@@ -185,7 +185,9 @@ namespace ZFX
             }
             Console.Write('\n');
         }
-
+        /// <summary>
+        /// Clear the screen
+        /// </summary>
         public void clear()
         {
             Console.Clear(); //very useful, in fact all of Z depends on this
@@ -241,6 +243,10 @@ namespace ZFX
                 Console.Write((char)RAM[i]);
             }
             memclean(0, pr.Length);
+            if(_nl)
+            {
+                nl();
+            }
         }
         public void nl()
         {
@@ -278,7 +284,7 @@ namespace ZFX
         /// <param name="wh">Index to store</param>
         public void add(int l1, int l2, int wh)
         {
-            setMemLoc(wh, l1 + l2); //MATH REGISTERS NOW!
+            setMemLoc(wh, l1 + l2); 
         }
         /// <summary>
         /// Sub
@@ -308,7 +314,7 @@ namespace ZFX
         /// <param name="wh">Index to store</param>
         public void div(int l1, int l2, int wh)
         {
-            setMemLoc(wh, Convert.ToInt32(Math.Round((double)(l1 / l2)))); //MATH REGISTERS!!!!!!!!!!
+            setMemLoc(wh, Convert.ToInt32(Math.Round((double)(l1 / l2))));
         }
         /// <summary>
         /// Square root
