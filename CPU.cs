@@ -11,6 +11,7 @@ namespace ZFX
 {
     public class CPU
     {
+        public Flags Flags;
         ///<summary>
         ///System initted
         ///</summary>
@@ -36,6 +37,16 @@ namespace ZFX
         /// </summary>
         public long?[] RIL;
         ///<summary>
+        ///
+        ///<summary/>
+        public void WriteDebug(string Message)
+        {
+            if (Flags.DebugMessages)
+            {
+                prnt("[DEBUG] " + Message);
+            }
+        }
+        ///<summary>
         ///Halt the system.
         ///</summary>
         public void hlt()
@@ -46,8 +57,8 @@ namespace ZFX
         }
         ///<summary>
         ///Clean memory from startIndex to endIndex
-        ///<paramref name="startIndex">Start of index to clean</paramref>
-        ///<paramref name="endIndex">End index to clean</paramref>
+        ///<param name="startIndex">Start of index to clean</paramref>
+        ///<param name="endIndex">End index to clean</paramref>
         ///</summary>
         public void memclean(int startIndex, long endIndex)
         {
@@ -472,4 +483,3 @@ namespace ZFX
         }
     }
 }
-

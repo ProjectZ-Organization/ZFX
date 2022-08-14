@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Flags.cs" />
     <Compile Include="Audio.cs" />
     <Compile Include="CPU.cs" />
     <Compile Include="Network.cs" />
