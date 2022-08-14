@@ -73,13 +73,16 @@ namespace ZFX
                     pMsg = "Critical Error";
                     break;
                 case PanicType.gp:
-                    pMsg = "General Protection Fault";
+                    pMsg = "General Protection";
                     break;
                 case PanicType.matherror:
                     pMsg = "Math Error";
                     break;
                 case PanicType.permdenied:
                     pMsg = "Permission Denied";
+                    break;
+                case PanicType.ringinvalid:
+                    pMsg = "Invalid ring. Existing rings: 3, 0. Current Ring: " + rdI(1024) + ".";
                     break;
             }
             Console.WriteLine("Error during execution\n{0}", pMsg);
@@ -103,13 +106,21 @@ namespace ZFX
             WriteDebug("Read indexes from " + sindex + "to " + eindex);
             return tmp;
         }
+        /// <summary>
+        /// Pointer to the display class
+        /// </summary>
         public Display Display;
-        public int[] rd(int sindex = 0)
+        /// <summary>
+        /// Reads from starting index untill the end of the RAM (unless its 0, use at your own risk)
+        /// </summary>
+        /// <param name="sindex">Starting index, Default: 0</param>
+        /// <returns></returns>
+        public long[] rd(int sindex = 0)
         {
-            var tmp = new List<int>();
-            for (int i = sindex; i < bitsize; i++)
+            var tmp = new List<long>();
+            for (long i = sindex; i < bitsize; i++)
             {
-                if (RAM[i] == 0)
+                if(RAM[i] == 0)
                 {
                     break;
                 }
@@ -125,7 +136,7 @@ namespace ZFX
         ///<param name="to">Index to copy to</param>
         public void memcpy(long from, long to)
         {
-            if (from >= bitsize || to >= bitsize)
+            if(from >= bitsize || to >= bitsize)
             {
                 panic(PanicType.gp);
                 return;
@@ -186,11 +197,11 @@ namespace ZFX
             Console.Write('\n');
         }
         /// <summary>
-        /// Clear the screen
+        /// Clear the screen, really really useful
         /// </summary>
         public void clear()
         {
-            Console.Clear(); //very useful, in fact all of Z depends on this
+            Console.Clear();
         }
         /// <summary>
         /// Compare indexes
@@ -232,7 +243,7 @@ namespace ZFX
         /// Print string and save it to memory (from 0 to length of string)
         /// </summary>
         /// <param name="pr">String to print</param>
-        public void prnt(string pr)
+        public void prnt(string pr, bool _nl = true)
         {
             for (int i = 0; i < pr.Length; i++)
             {
@@ -248,9 +259,12 @@ namespace ZFX
                 nl();
             }
         }
+        /// <summary>
+        /// Gives a newline, Z totally relies on this so much
+        /// </summary>
         public void nl()
         {
-            Console.Write(Environment.NewLine);//Z depends on this too
+            Console.Write(Environment.NewLine);
         }
         /// <summary>
         /// Print memory locations 
