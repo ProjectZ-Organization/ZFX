@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZFX
+namespace ZCPU
 {
     public class Display
     {
@@ -13,7 +13,12 @@ namespace ZFX
         {
 
         }
-
+        /// <summary>
+        /// Sets the current pixel
+        /// </summary>
+        /// <param name="c">Color to set the pixel to</param>
+        /// <param name="x">X coordinate</param>
+        /// <param name="y">Y coordinate</param>
         public void setPixel(Color c, int x, int y)
         {
             int index = (c.R > 128 | c.G > 128 | c.B > 128) ? 8 : 0;
