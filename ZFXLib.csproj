@@ -50,12 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Flags.cs" />
-    <Compile Include="Audio.cs" />
     <Compile Include="CPU.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Display.cs" />
-    <Compile Include="Disk.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
