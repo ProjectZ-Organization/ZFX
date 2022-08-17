@@ -16,7 +16,7 @@ namespace ZCPU
         public bool DebugMessages;
     }
 
-    internal class CPU
+    public class CPU
     {
        ///<summary>
        ///System initted
