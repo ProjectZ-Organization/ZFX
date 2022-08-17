@@ -12,14 +12,13 @@ namespace ZCPU
     public struct field
     {
         // init bitfield for enableBoot
-        public int ring;
         public bool DebugMessages;
     }
 
     public class CPU
     {
-       ///<summary>
-       ///System initted
+        ///<summary>
+        ///System initted
         //</summary>
         public bool init = false;
         /// <summary>
@@ -43,7 +42,7 @@ namespace ZCPU
         /// Flags for CPU.cs. MUST SET EXACTLY AFTER INITIALIZATION. NO CALLS BEFOREHAND
         /// </summary>
         public field flags;
-    
+
         ///<summary>
         ///Halt the system.
         ///</summary>
@@ -89,18 +88,18 @@ namespace ZCPU
                         case PanicType.permdenied:
                             pMsg = "Permission Denied";
                             break;
-                        case PanicType.ringinvalid:
-                            pMsg = "Invalid ring. Existing rings: 3, 0. Current Ring: " + rdI(1024) + ".";
+                        case PanicType.invalidinstruction:
+                            pMsg = "Invalid Instruction";
                             break;
                     }
                 }
 
             }
 
-                Console.WriteLine("Error during execution\n{0}", pMsg);
-                memclean(0, bitsize);
-                Console.ReadLine();
-                Environment.Exit(1);
+            Console.WriteLine("Error during execution\n{0}", pMsg);
+            memclean(0, bitsize);
+            Console.ReadLine();
+            Environment.Exit(1);
 
         }
         /// <summary>
@@ -155,7 +154,7 @@ namespace ZCPU
         /// <returns></returns>
         public bool IsReserved(long i)
         {
-            return RIL[i] == 0;
+            return RIL[i] != null;
         }
         /// <summary>
         /// Reads an array of indexes
@@ -238,6 +237,7 @@ namespace ZCPU
                 panic(PanicType.gp);
                 return;
             }
+            
             this.RAM[index] = val;
         }
         private void setReservedBit(long index, int val)
@@ -383,7 +383,7 @@ namespace ZCPU
                         Console.Write((char)RAM[i]);
                 }
             }
-            
+
             // EOF
             Console.Write('\n');
             nl();
@@ -462,7 +462,7 @@ namespace ZCPU
         /// <summary>
         /// Enum for every panic scenario
         /// </summary>
-        public enum PanicType { criticalerror, gp, matherror, permdenied, ringinvalid }
+        public enum PanicType { criticalerror, gp, matherror, permdenied, invalidinstruction }
         /// <summary>
         /// Init function, Can only be run once. USE AT YOUR OWN RISK!
         /// </summary>
@@ -511,16 +511,11 @@ namespace ZCPU
                         0, bitsize);
                 }
 
- 
+
             }
 
-            if(flags.ring != 0 && flags.ring != 3)
-            {
-                hlt();
-            }
             init = true;
 
         }
     }
 }
-
