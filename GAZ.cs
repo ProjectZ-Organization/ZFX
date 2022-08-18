@@ -105,7 +105,7 @@ namespace ZCPU
                         }
                         line += b + " ";
                     }
-                    c.prnt(line);
+                    Console.WriteLine(line);
                     break;
                 case "sqrt":
                     c.sqrt(Convert.ToInt32(arg1), Convert.ToInt32(arg2));
