@@ -18,7 +18,7 @@ namespace ZCPU
             try
             {
                 arg1 = line.Split(' ')[1];
-                if(arg1.StartsWith("%"))
+                if (arg1.StartsWith("%"))
                 {
                     arg1 = arg1.Replace("%", "");
                     arg1 = c.RAM[Convert.ToInt32(arg1)].ToString();
@@ -98,7 +98,7 @@ namespace ZCPU
                     foreach (var i in oldline.Split(' '))
                     {
                         var b = i;
-                        if(b.StartsWith("%"))
+                        if (b.StartsWith("%"))
                         {
                             b = b.Replace("%", "");
                             b = c.RAM[Convert.ToInt32(b)].ToString();
@@ -110,8 +110,17 @@ namespace ZCPU
                 case "sqrt":
                     c.sqrt(Convert.ToInt32(arg1), Convert.ToInt32(arg2));
                     break;
+                case "rdn":
+                    c.setMemLoc(Convert.ToInt32(arg1), Convert.ToInt32(Console.ReadLine()));
+                    break;
                 case "pow":
                     c.pow(Convert.ToInt32(arg1), Convert.ToInt32(arg2), Convert.ToInt32(arg3));
+                    break;
+                case "rand":
+                    c.rand(Convert.ToInt32(arg1), Convert.ToInt32(arg2), Convert.ToInt32(arg3));
+                    break;
+                case "xor":
+                    c.xor(Convert.ToInt32(arg1), Convert.ToInt32(arg2), Convert.ToInt32(arg3));
                     break;
                 case "jmp":
                     pc = Convert.ToInt32(arg1) - 1;
@@ -155,10 +164,10 @@ namespace ZCPU
         public void Run(string file, CPU c)
         {
             string[] lines = File.ReadAllLines(file);
-            while (pc<lines.Length)
+            while (pc < lines.Length)
             {
                 pc++;
-                InterpretLine(lines[pc-1], c);
+                InterpretLine(lines[pc - 1], c);
             }
         }
     }
