@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,13 +10,10 @@ namespace ZCPU
     public class GAZ
     {
         public long pc = 0;
-
         public bool cmpequalresult = false;
         public bool cmpgreaterthanresult = false;
         public void InterpretLine(string line, CPU c)
         {
-            c.WriteDebug("Interpreting assembly line: " + line);
-            line = line.ToLower();
             string arg1 = "";
             try
             {
@@ -53,10 +50,6 @@ namespace ZCPU
             catch { }
             switch (line.Split(' ')[0])
             {
-                case "mov":
-                    c.setMemLoc(Convert.ToInt32(arg2), Convert.ToInt32(arg1));
-
-                    break;
                 case "add":
                     c.add(Convert.ToInt32(arg1), Convert.ToInt32(arg2), Convert.ToInt32(arg3));
                     break;
@@ -95,6 +88,9 @@ namespace ZCPU
                 case "rde":
                     c.rde(Convert.ToInt32(arg1));
                     break;
+                case "mov":
+                    c.setMemLoc(Convert.ToInt32(arg2), Convert.ToInt32(arg1));
+                    break;
                 case "prnt":
                     line = line.Replace("prnt ", "");
                     string oldline = line;
@@ -118,7 +114,7 @@ namespace ZCPU
                     c.pow(Convert.ToInt32(arg1), Convert.ToInt32(arg2), Convert.ToInt32(arg3));
                     break;
                 case "jmp":
-                    pc = Convert.ToInt32(arg1)-1;
+                    pc = Convert.ToInt32(arg1) - 1;
                     break;
                 case "jg":
                     if (cmpgreaterthanresult)
@@ -149,7 +145,7 @@ namespace ZCPU
                     cmpgreaterthanresult = Convert.ToInt32(arg1) > Convert.ToInt32(arg2);
                     break;
                 default:
-                    if(!line.StartsWith(";"))
+                    if (!line.StartsWith(";"))
                     {
                         c.panic(CPU.PanicType.invalidinstruction);
                     }
