@@ -30,10 +30,10 @@ namespace ZCPU
             try
             {
                 arg2 = line.Split(' ')[2];
-                if (arg1.StartsWith("%"))
+                if (arg2.StartsWith("%"))
                 {
-                    arg1 = arg1.Replace("%", "");
-                    arg1 = c.RAM[Convert.ToInt32(arg1)].ToString();
+                    arg2 = arg2.Replace("%", "");
+                    arg2 = c.RAM[Convert.ToInt32(arg2)].ToString();
                 }
             }
             catch { }
@@ -41,10 +41,10 @@ namespace ZCPU
             try
             {
                 arg3 = line.Split(' ')[3];
-                if (arg1.StartsWith("%"))
+                if (arg3.StartsWith("%"))
                 {
-                    arg1 = arg1.Replace("%", "");
-                    arg1 = c.RAM[Convert.ToInt32(arg1)].ToString();
+                    arg3 = arg3.Replace("%", "");
+                    arg3 = c.RAM[Convert.ToInt32(arg3)].ToString();
                 }
             }
             catch { }
