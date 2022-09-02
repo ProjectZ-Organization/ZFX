@@ -120,7 +120,7 @@ namespace ZCPU
         {
             if (flags.DebugMessages)
             {
-                prnt("[DEBUG] " + Message);
+                Debug.WriteLine("[DEBUG] " + Message);
             }
         }
         /// <summary>
