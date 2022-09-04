@@ -82,6 +82,9 @@ namespace ZCPU
                 case "clr":
                     c.clear();
                     break;
+                case "load":
+                    Run(arg1, c);
+                    break;
                 case "swap":
                     c.swp(Convert.ToInt32(arg1), Convert.ToInt32(arg2));
                     break;
