@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ZCPU
 {
-    class Network
+    public class Network
     {
         public Network()
         {
