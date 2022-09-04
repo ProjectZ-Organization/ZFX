@@ -8,12 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 namespace ZCPU
 {
-    // struct dec
-    public struct field
-    {
-        // init bitfield for enableBoot
-        public bool DebugMessages;
-    }
 
     public class CPU
     {
@@ -37,11 +31,6 @@ namespace ZCPU
         /// The List of reserved indexes
         /// </summary>
         public long?[] RIL;
-
-        /// <summary>
-        /// Flags for CPU.cs. MUST SET EXACTLY AFTER INITIALIZATION. NO CALLS BEFOREHAND
-        /// </summary>
-        public field flags;
 
         ///<summary>
         ///Halt the system.
@@ -72,7 +61,6 @@ namespace ZCPU
         {
             string pMsg = "";
             {
-                Console.Clear();
                 {
                     switch (panicType)
                     {
@@ -80,7 +68,7 @@ namespace ZCPU
                             pMsg = "Critical Error";
                             break;
                         case PanicType.gp:
-                            pMsg = "General Protection";
+                            pMsg = "Segmentation Fault";
                             break;
                         case PanicType.matherror:
                             pMsg = "Math Error";
@@ -96,10 +84,7 @@ namespace ZCPU
 
             }
 
-            Console.WriteLine("Error during execution\n{0}", pMsg);
-            memclean(0, bitsize);
-            Console.ReadLine();
-            Environment.Exit(1);
+            Console.WriteLine(pMsg);
 
         }
         /// <summary>
@@ -111,17 +96,6 @@ namespace ZCPU
         {
             if (index < 0 || index > bitsize) { panic(PanicType.gp); return 0; }
             return RAM[index];
-        }
-        /// <summary>
-        /// Print a string to the debug console
-        /// </summary>
-        /// <paramref name="Message">Message to write</param>
-        public void WriteDebug(string Message)
-        {
-            if (flags.DebugMessages)
-            {
-                prnt("[DEBUG] " + Message);
-            }
         }
         /// <summary>
         /// Reserves a certain index
