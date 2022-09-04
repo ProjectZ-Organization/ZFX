@@ -211,7 +211,7 @@ namespace ZCPU
                 panic(PanicType.gp);
                 return;
             }
-            
+
             this.RAM[index] = val;
         }
         private void setReservedBit(long index, int val)
@@ -401,6 +401,14 @@ namespace ZCPU
         public void div(int l1, int l2, int wh)
         {
             setMemLoc(wh, Convert.ToInt32(Math.Round((double)(l1 / l2))));
+        }
+        public void rand(int l1, int l2, int wh)
+        {
+            setMemLoc(wh, new Random().Next(l1, l2));
+        }
+        public void xor(int l1, int l2, int wh)
+        {
+            setMemLoc(wh, l1^l2);
         }
         /// <summary>
         /// Square root
