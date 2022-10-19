@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 namespace ZCPU
 {
-
     public class CPU
     {
         ///<summary>
@@ -33,13 +32,64 @@ namespace ZCPU
         public long?[] RIL;
 
         ///<summary>
+        ///Program counter
+        ///</summary>
+        UInt64 pc = 0;
+
+        ///<summary>
         ///Halt the system.
         ///</summary>
         public void hlt()
         {
             memclean(0, bitsize);
             RAM = null;
-            while (true) { }
+            while (true) {}
+        }
+
+        ///<summary>
+        ///CPU clock cycle
+        ///</summary>
+        public void ClockCycle() {
+            if(!init){
+                Console.WriteLine("Tried to cycle while CPU isn't running");
+                Environment.Exit(1);
+            }
+            UInt64 CurrentInstruction = RAM[pc];
+            switch(CurrentInstruction) {
+                case 0x00:
+                    //Console.WriteLine("nop");
+                    pc++;
+                case 0x01:
+                    //Console.WriteLine("hlt");
+                    hlt();
+                case 0x02:
+                    add(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
+                    //Console.WriteLine("add");
+                    pc += 6;
+                case 0x03:
+                    sub(RAM[pc +1], RAM[pc + 2], RAM[pc + 3]);
+                    //Console.WriteLine("sub");
+                    pc += 6;
+                case 0x04:
+                    mul(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
+                    //Console.WriteLine("mul");
+                    pc += 6;
+                case 0x05:
+                    div(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
+                    //Console.WriteLine("div");
+                    pc += 6;
+                case 0x06:
+                    pow(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
+                    //Console.WriteLine("pow");
+                    pc += 6;
+                case 0x07:
+                    sqrt(RAM[pc + 1], RAM[pc + 2]);
+                    //Console.WriteLine("sqrt");
+                    pc += 3;
+                default:
+                    Console.WriteLine("Skipping uknown instruction " + pc);
+                    pc++;
+            }
         }
         ///<summary>
         ///Clean memory from startIndex to endIndex
@@ -53,40 +103,7 @@ namespace ZCPU
                 setMemLoc(i, 0);
             }
         }
-        /// <summary>
-        /// BSOD the system
-        /// </summary>
-        /// <param name="panicType">Type of panic, type: enum</param>
-        public void panic(PanicType panicType)
-        {
-            string pMsg = "";
-            {
-                {
-                    switch (panicType)
-                    {
-                        case PanicType.criticalerror:
-                            pMsg = "Critical Error";
-                            break;
-                        case PanicType.gp:
-                            pMsg = "Segmentation Fault";
-                            break;
-                        case PanicType.matherror:
-                            pMsg = "Math Error";
-                            break;
-                        case PanicType.permdenied:
-                            pMsg = "Permission Denied";
-                            break;
-                        case PanicType.invalidinstruction:
-                            pMsg = "Invalid Instruction";
-                            break;
-                    }
-                }
 
-            }
-
-            Console.WriteLine(pMsg);
-
-        }
         /// <summary>
         /// Read index.
         /// </summary>
@@ -94,7 +111,7 @@ namespace ZCPU
         /// <returns>Value of index (int)</returns>
         public long rdI(long index)
         {
-            if (index < 0 || index > bitsize) { panic(PanicType.gp); return 0; }
+            if (index < 0 || index > bitsize) { return 0; }
             return RAM[index];
         }
         /// <summary>
@@ -103,11 +120,7 @@ namespace ZCPU
         /// <param name="i">The index to reserve</param>
         public void ReserveIndex(long i)
         {
-            if (i >= bitsize)
-            {
-                panic(PanicType.gp);
-                return;
-            }
+            if (i >= bitsize) { return; }
             RIL[i] = RAM[i];
             RAM[i] = 0;
         }
@@ -196,6 +209,7 @@ namespace ZCPU
                 mem = "GB";
                 memtemp /= 1024;
             }
+            Console.WriteLine("PC = {0}", RAM[pc]);
             Console.WriteLine("Memory: {0}{1}", memtemp, mem);
 
         }
@@ -208,7 +222,7 @@ namespace ZCPU
         {
             if (index >= bitsize || IsReserved(index))
             {
-                panic(PanicType.gp);
+                Console.WriteLine("Tried to write to index beyond available RAM.");
                 return;
             }
 
@@ -218,7 +232,7 @@ namespace ZCPU
         {
             if (index >= bitsize)
             {
-                panic(PanicType.gp);
+                Console.WriteLine("Tried to write to index beyond available RAM.");
                 return;
             }
             this.RAM[index] = val;
@@ -231,7 +245,7 @@ namespace ZCPU
         {
             if (index >= bitsize)
             {
-                panic(PanicType.gp);
+                Console.WriteLine("Tried to write to index beyond available RAM.");
                 return;
             }
             RAM[index]++;
@@ -259,13 +273,6 @@ namespace ZCPU
                 Console.Write(RAM[i].ToString() + " ");
             }
             Console.Write('\n');
-        }
-        /// <summary>
-        /// Clear the screen
-        /// </summary>
-        public void clear()
-        {
-            Console.Clear();
         }
         /// <summary>
         /// Compare indexes
@@ -301,33 +308,6 @@ namespace ZCPU
             }
         }
         /// <summary>
-        /// Print string and save it to memory (from 0 to length of string)
-        /// </summary>
-        /// <param name="pr">String to print</param>
-        public void prnt(string pr, bool _nl = true)
-        {
-            for (int i = 0; i < pr.Length; i++)
-            {
-                setMemLoc(i, (int)pr[i]);
-            }
-            for (int i = 0; i < pr.Length; i++)
-            {
-                Console.Write((char)RAM[i]);
-            }
-            memclean(0, pr.Length);
-            if (_nl)
-            {
-                nl();
-            }
-        }
-        /// <summary>
-        /// Gives a newline
-        /// </summary>
-        public void nl()
-        {
-            Console.Write(Environment.NewLine);
-        }
-        /// <summary>
         /// Print memory locations 
         /// </summary>
         /// <param name="from">From (default:0)</param>
@@ -360,13 +340,12 @@ namespace ZCPU
 
             // EOF
             Console.Write('\n');
-            nl();
         }
         /// <summary>
         /// Sum
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">first number</param>
+        /// <param name="l2">second number</param>
         /// <param name="wh">Index to store</param>
         public void add(int l1, int l2, int wh)
         {
@@ -434,7 +413,6 @@ namespace ZCPU
         /// Init system
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
-        /// <param name="RILLENGTH">The amount of indexes possible to reserve</param>
 
 
         public CPU(long bitSystem = 2)
@@ -442,20 +420,14 @@ namespace ZCPU
             initd(bitSystem * 1024);
         }
         /// <summary>
-        /// Enum for every panic scenario
-        /// </summary>
-        public enum PanicType { criticalerror, gp, matherror, permdenied, invalidinstruction }
-        /// <summary>
         /// Init function, Can only be run once. USE AT YOUR OWN RISK!
         /// </summary>
         /// <param name="memsize">Amount of memory to allocate</param>
-        /// <param name="ring">The ring you want to start the os in</param>
-        /// <param name="rilcsize">The size of the array RILC</param>
         public void initd(long memsize)
         {
             if (init)
             {
-                panic(PanicType.criticalerror);
+                Console.WriteLine("Attempted to run init while emulator is already initialized.");
                 Environment.Exit(1);
             }
             // memtemp init
@@ -473,7 +445,7 @@ namespace ZCPU
                     }
                     if (memtemp <= 0)
                     {
-                        Console.WriteLine("Not enough memory to start software.");
+                        Console.WriteLine("Not enough memory to start emulator.");
                         Environment.Exit(1);
                     }
                 }
@@ -489,15 +461,11 @@ namespace ZCPU
                     {
                         RIL[i] = null;
                     }
-                    memclean(
-                        0, bitsize);
+                    memclean(0, bitsize);
                 }
-
-
             }
-
             init = true;
-
+            ClockCycle();
         }
     }
 }

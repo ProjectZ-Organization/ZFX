@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CPU.cs" />
-    <Compile Include="Network.cs" />
     <Compile Include="Display.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
