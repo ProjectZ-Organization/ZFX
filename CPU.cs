@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace ZCPU
 {
     public class CPU
@@ -14,10 +15,6 @@ namespace ZCPU
         ///System initted
         //</summary>
         public bool init = false;
-        /// <summary>
-        /// Locator to network
-        /// </summary>
-        public Network Network;
         /// <summary>
         /// RAM array
         /// </summary>
@@ -34,7 +31,7 @@ namespace ZCPU
         ///<summary>
         ///Program counter
         ///</summary>
-        UInt64 pc = 0;
+        ulong pc = 0;
 
         ///<summary>
         ///Halt the system.
@@ -46,49 +43,63 @@ namespace ZCPU
             while (true) {}
         }
 
+        class InvalidInstructionException : Exception
+        {
+
+        }
+
         ///<summary>
         ///CPU clock cycle
         ///</summary>
         public void ClockCycle() {
             if(!init){
                 Console.WriteLine("Tried to cycle while CPU isn't running");
-                Environment.Exit(1);
+                throw new InvalidInstructionException();
             }
-            UInt64 CurrentInstruction = RAM[pc];
+            long CurrentInstruction = RAM[pc];
             switch(CurrentInstruction) {
                 case 0x00:
-                    //Console.WriteLine("nop");
+                    Debug.WriteLine("nop");
                     pc++;
+                    break;
                 case 0x01:
-                    //Console.WriteLine("hlt");
+                    Debug.WriteLine("hlt");
                     hlt();
+                    break;
                 case 0x02:
-                    add(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
-                    //Console.WriteLine("add");
+                    add((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    Debug.WriteLine("add");
                     pc += 6;
+                    break;
                 case 0x03:
-                    sub(RAM[pc +1], RAM[pc + 2], RAM[pc + 3]);
-                    //Console.WriteLine("sub");
+                    sub((int)RAM[pc +1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    Debug.WriteLine("sub");
                     pc += 6;
+                    break;
                 case 0x04:
-                    mul(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
-                    //Console.WriteLine("mul");
+                    mul((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    Debug.WriteLine("mul");
                     pc += 6;
+                    break;
                 case 0x05:
-                    div(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
-                    //Console.WriteLine("div");
+                    div((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    Debug.WriteLine("div");
                     pc += 6;
+                    break;
                 case 0x06:
-                    pow(RAM[pc + 1], RAM[pc + 2], RAM[pc + 3]);
-                    //Console.WriteLine("pow");
+                    pow((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    Debug.WriteLine("pow");
                     pc += 6;
+                    break;
                 case 0x07:
-                    sqrt(RAM[pc + 1], RAM[pc + 2]);
-                    //Console.WriteLine("sqrt");
+                    sqrt((int)RAM[pc + 1], (int)RAM[pc + 2]);
+                    Debug.WriteLine("sqrt");
                     pc += 3;
+                    break;
                 default:
-                    Console.WriteLine("Skipping uknown instruction " + pc);
+                    Debug.WriteLine("Skipping uknown instruction " + pc);
                     pc++;
+                    break;
             }
         }
         ///<summary>
@@ -156,10 +167,6 @@ namespace ZCPU
             return tmp;
         }
         /// <summary>
-        /// Pointer to the display class
-        /// </summary>
-        public Display Display;
-        /// <summary>
         /// Reads from starting index untill the end of the RAM (unless its 0, use at your own risk)
         /// </summary>
         /// <param name="sindex">Starting index, Default: 0</param>
@@ -186,7 +193,6 @@ namespace ZCPU
         {
             if (from >= bitsize || to >= bitsize)
             {
-                panic(PanicType.gp);
                 return;
             }
             RAM[to] = RAM[from];
@@ -228,6 +234,7 @@ namespace ZCPU
 
             this.RAM[index] = val;
         }
+
         private void setReservedBit(long index, int val)
         {
             if (index >= bitsize)
@@ -342,7 +349,7 @@ namespace ZCPU
             Console.Write('\n');
         }
         /// <summary>
-        /// Sum
+        /// Addition.
         /// </summary>
         /// <param name="l1">first number</param>
         /// <param name="l2">second number</param>
@@ -352,7 +359,7 @@ namespace ZCPU
             setMemLoc(wh, l1 + l2);
         }
         /// <summary>
-        /// Sub
+        /// Substraction.
         /// </summary>
         /// <param name="l1">n1</param>
         /// <param name="l2">n2</param>
@@ -362,7 +369,7 @@ namespace ZCPU
             setMemLoc(wh, l1 - l2);
         }
         /// <summary>
-        /// Mul
+        /// Muliplication.
         /// </summary>
         /// <param name="l1">n1</param>
         /// <param name="l2">n2</param>
@@ -372,7 +379,7 @@ namespace ZCPU
             setMemLoc(wh, l1 * l2);
         }
         /// <summary>
-        /// Div
+        /// Division.
         /// </summary>
         /// <param name="l1">n1</param>
         /// <param name="l2">n2</param>
@@ -409,21 +416,23 @@ namespace ZCPU
         {
             setMemLoc(wh, Convert.ToInt32(Math.Round(Math.Pow(l1, l2))));
         }
+
         /// <summary>
-        /// Init system
+        /// Create a new instance.
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
-
-
-        public CPU(long bitSystem = 2)
+        /// <param name = "FileName">ROM to run</param>
+        public void Instance(long bitSystem, string FileName, bool Gfx)
         {
-            initd(bitSystem * 1024);
+            initd(bitSystem * 1024, FileName, Gfx);
         }
+
         /// <summary>
-        /// Init function, Can only be run once. USE AT YOUR OWN RISK!
+        /// Init function, Can only be run once.
         /// </summary>
         /// <param name="memsize">Amount of memory to allocate</param>
-        public void initd(long memsize)
+        /// <param name = "ROM">ROM filename</param>
+        public void initd(long memsize, string ROM, bool Gfx)
         {
             if (init)
             {
@@ -464,8 +473,8 @@ namespace ZCPU
                     memclean(0, bitsize);
                 }
             }
-            init = true;
             ClockCycle();
+            init = true;
         }
     }
 }
