@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZCPU
+namespace ZFX
 {
     public class CPU
     {
@@ -96,6 +96,14 @@ namespace ZCPU
                     Debug.WriteLine("sqrt");
                     pc += 3;
                     break;
+                case 0x08:
+                    inc(RAM[pc] + 1);
+                    Debug.WriteLine("inc");
+                    pc += 2;
+                case 0x09:
+                    dec(RAM[pc + 1]);
+                    Debug.WriteLine("dec");
+                    pc +=2;
                 default:
                     Debug.WriteLine("Skipping uknown instruction " + pc);
                     pc++;
@@ -125,6 +133,7 @@ namespace ZCPU
             if (index < 0 || index > bitsize) { return 0; }
             return RAM[index];
         }
+
         /// <summary>
         /// Reserves a certain index
         /// </summary>
@@ -139,6 +148,7 @@ namespace ZCPU
         /// Unreserves an index
         /// </summary>
         /// <param name="i">The index to unreserve</param>
+
         public void UnreserveIndex(long i)
         {
             long? a = RIL[i];
@@ -166,8 +176,9 @@ namespace ZCPU
             }
             return tmp;
         }
+
         /// <summary>
-        /// Reads from starting index untill the end of the RAM (unless its 0, use at your own risk)
+        /// Reads from starting index untill the end of the RAM (unless it's 0)
         /// </summary>
         /// <param name="sindex">Starting index, Default: 0</param>
         /// <returns></returns>
@@ -184,6 +195,7 @@ namespace ZCPU
             }
             return tmp.ToArray();
         }
+
         ///<summary>
         ///Copy memory.
         ///</summary>
@@ -197,6 +209,7 @@ namespace ZCPU
             }
             RAM[to] = RAM[from];
         }
+
         ///<summary>
         ///Writes system information.
         ///</summary>
@@ -219,6 +232,7 @@ namespace ZCPU
             Console.WriteLine("Memory: {0}{1}", memtemp, mem);
 
         }
+
         ///<summary>
         ///Sets a memory location
         ///</summary>
@@ -244,8 +258,9 @@ namespace ZCPU
             }
             this.RAM[index] = val;
         }
+
         ///<summary>
-        ///Increment index by 1
+        ///Increment index
         ///</summary>
         ///<param name="index">Index to increment</param>
         public void inc(int index)
@@ -257,6 +272,20 @@ namespace ZCPU
             }
             RAM[index]++;
         }
+
+        ///<summary>
+        ///Deincrement index
+        ///</summary>
+        ///<param name="index">Index to deincrement</param>
+        public void dec(int index) {
+            if (index >= bitsize)
+            {
+                Console.WriteLine("Tried to write to index beyond available RAM.");
+                return;
+            }
+            RAM[index]--;          
+        }
+
         ///<summary>
         ///Dump memory to screen.
         ///</summary>
@@ -268,6 +297,7 @@ namespace ZCPU
             }
             Console.Write('\n');
         }
+
         ///<summary>
         ///Dump memory as int
         ///</summary>
@@ -281,6 +311,7 @@ namespace ZCPU
             }
             Console.Write('\n');
         }
+    
         /// <summary>
         /// Compare indexes
         /// </summary>
@@ -291,6 +322,7 @@ namespace ZCPU
         {
             setMemLoc(wh, l1 == l2 ? 1 : 0);
         }
+    
         ///<summary>
         ///Swap indexes.
         ///</summary>
@@ -302,6 +334,7 @@ namespace ZCPU
             RAM[i2] = RAM[i1] - RAM[i2];
             RAM[i1] = RAM[i1] - RAM[i2];
         }
+
         ///<summary>
         ///Read to memory
         ///</summary>
@@ -314,6 +347,7 @@ namespace ZCPU
                 setMemLoc(i + startIndex, a[i]);
             }
         }
+
         /// <summary>
         /// Print memory locations 
         /// </summary>
@@ -348,6 +382,7 @@ namespace ZCPU
             // EOF
             Console.Write('\n');
         }
+
         /// <summary>
         /// Addition.
         /// </summary>
@@ -358,6 +393,7 @@ namespace ZCPU
         {
             setMemLoc(wh, l1 + l2);
         }
+
         /// <summary>
         /// Substraction.
         /// </summary>
@@ -368,6 +404,7 @@ namespace ZCPU
         {
             setMemLoc(wh, l1 - l2);
         }
+
         /// <summary>
         /// Muliplication.
         /// </summary>
@@ -378,6 +415,7 @@ namespace ZCPU
         {
             setMemLoc(wh, l1 * l2);
         }
+
         /// <summary>
         /// Division.
         /// </summary>
@@ -388,14 +426,17 @@ namespace ZCPU
         {
             setMemLoc(wh, Convert.ToInt32(Math.Round((double)(l1 / l2))));
         }
+
         public void rand(int l1, int l2, int wh)
         {
             setMemLoc(wh, new Random().Next(l1, l2));
         }
+
         public void xor(int l1, int l2, int wh)
         {
             setMemLoc(wh, l1^l2);
         }
+
         /// <summary>
         /// Square root
         /// </summary>
@@ -406,8 +447,9 @@ namespace ZCPU
         {
             setMemLoc(wh, Convert.ToInt32(Math.Round(Math.Sqrt(l))));
         }
+
         /// <summary>
-        /// Power of
+        /// Power
         /// </summary>
         /// <param name="l1">n1</param>
         /// <param name="l2">n2</param>
@@ -432,6 +474,7 @@ namespace ZCPU
         /// </summary>
         /// <param name="memsize">Amount of memory to allocate</param>
         /// <param name = "ROM">ROM filename</param>
+        /// <param name = "Gfx">Toggle graphics mode</param>
         public void initd(long memsize, string ROM, bool Gfx)
         {
             if (init)
