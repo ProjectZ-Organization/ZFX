@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ZFX
 {
@@ -97,11 +92,11 @@ namespace ZFX
                     pc += 3;
                     break;
                 case 0x08:
-                    inc(RAM[pc] + 1);
+                    inc((int)RAM[pc] + 1);
                     Debug.WriteLine("inc");
                     pc += 2;
                 case 0x09:
-                    dec(RAM[pc + 1]);
+                    dec((int)RAM[pc + 1]);
                     Debug.WriteLine("dec");
                     pc +=2;
                 default:
