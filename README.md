@@ -8,12 +8,6 @@ CPU
 
 RAM
 
-Hard disk
+Custom devices (WIP)
 
-Display
-
-Networking
-
-Audio (WIP)
-
-# **The Z Framework is only owned by this organization, and any other version is a fork.**
+Display (WIP too)

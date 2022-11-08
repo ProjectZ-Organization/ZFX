@@ -1,18 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ZCPU
+namespace ZFX
 {
     public class Display
     {
-        public Display()
-        {
-
-        }
+        /// <summary>
+        /// Defualt screen height.
+        /// </summary>
+        int ScreenHeight = 800;
+        /// <summary>
+        /// Default screen width.
+        /// </summary>
+        int ScreenWidth = 600;
         /// <summary>
         /// Sets the current pixel
         /// </summary>
@@ -33,6 +33,12 @@ namespace ZCPU
             Console.Write(" ");
             Console.SetCursorPosition(left, top);
             Console.BackgroundColor = bgc;
+        }
+
+        public void ChangeResolution(int Height, int Width)
+        {
+            ScreenHeight = Height;
+            ScreenWidth = Width;
         }
     }
 }
