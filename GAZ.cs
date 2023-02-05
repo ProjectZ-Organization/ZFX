@@ -9,9 +9,23 @@ namespace ZCPU
 {
     public class GAZ
     {
+        /// <summary>
+        /// Program Counter
+        /// </summary>
         public long pc = 0;
+        /// <summary>
+        /// Compare Equal Result (CER)
+        /// </summary>
         public bool cmpequalresult = false;
+        /// <summary>
+        /// Compare Greater than result (CGR)
+        /// </summary>
         public bool cmpgreaterthanresult = false;
+        /// <summary>
+        /// Interprets a line
+        /// </summary>
+        /// <param name="line">the line</param>
+        /// <param name="c">The CPU</param>
         public void InterpretLine(string line, CPU c)
         {
             string arg1 = "";
@@ -164,6 +178,11 @@ namespace ZCPU
                     break;
             }
         }
+        /// <summary>
+        /// Run Function
+        /// </summary>
+        /// <param name="file">The file to run</param>
+        /// <param name="c">the CPU</param>
         public void Run(string file, CPU c)
         {
             string[] lines = File.ReadAllLines(file);
