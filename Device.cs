@@ -7,7 +7,7 @@ namespace ZFX {
     public interface Device {
         string Name {}
         sbyte Send();
-        void Receive(sbyte Data);
+        void Receive(byte Data);
         void Tick();
         void Destroy();
     }
