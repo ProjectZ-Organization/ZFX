@@ -363,49 +363,61 @@ namespace ZCPU
             nl();
         }
         /// <summary>
-        /// Sum
+        /// Sum of two numbers
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">First Number</param>
+        /// <param name="l2">Second Number</param>
         /// <param name="wh">Index to store</param>
         public void add(int l1, int l2, int wh)
         {
             setMemLoc(wh, l1 + l2);
         }
         /// <summary>
-        /// Sub
+        /// Subtraction of two numbers
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">First Number</param>
+        /// <param name="l2">Second Number</param>
         /// <param name="wh">Index to store</param>
         public void sub(int l1, int l2, int wh)
         {
             setMemLoc(wh, l1 - l2);
         }
         /// <summary>
-        /// Mul
+        /// Multiplication of two numbers
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">First Number</param>
+        /// <param name="l2">Second Number</param>
         /// <param name="wh">Index to store</param>
         public void mul(int l1, int l2, int wh)
         {
             setMemLoc(wh, l1 * l2);
         }
         /// <summary>
-        /// Div
+        /// Division of two numbers
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">First Number</param>
+        /// <param name="l2">Second Number</param>
         /// <param name="wh">Index to store</param>
         public void div(int l1, int l2, int wh)
         {
             setMemLoc(wh, Convert.ToInt32(Math.Round((double)(l1 / l2))));
         }
+        /// <summary>
+        /// Random Number
+        /// </summary>
+        /// <param name="l1">Lower Bound</param>
+        /// <param name="l2">Upper Bound</param>
+        /// <param name="wh">Where to store</param>
         public void rand(int l1, int l2, int wh)
         {
             setMemLoc(wh, new Random().Next(l1, l2));
         }
+        /// <summary>
+        /// XOR
+        /// </summary>
+        /// <param name="l1">first input</param>
+        /// <param name="l2">second input</param>
+        /// <param name="wh">where to store</param>
         public void xor(int l1, int l2, int wh)
         {
             setMemLoc(wh, l1^l2);
@@ -413,8 +425,7 @@ namespace ZCPU
         /// <summary>
         /// Square root
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l">The number</param>
         /// <param name="wh">Index to store</param>
         public void sqrt(int l, int wh)
         {
@@ -423,8 +434,8 @@ namespace ZCPU
         /// <summary>
         /// Power of
         /// </summary>
-        /// <param name="l1">n1</param>
-        /// <param name="l2">n2</param>
+        /// <param name="l1">First Number</param>
+        /// <param name="l2">Second Number</param>
         /// <param name="wh">Index to store</param>
         public void pow(int l1, int l2, int wh)
         {
@@ -434,7 +445,6 @@ namespace ZCPU
         /// Init system
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
-        /// <param name="RILLENGTH">The amount of indexes possible to reserve</param>
 
 
         public CPU(long bitSystem = 2)
@@ -449,8 +459,6 @@ namespace ZCPU
         /// Init function, Can only be run once. USE AT YOUR OWN RISK!
         /// </summary>
         /// <param name="memsize">Amount of memory to allocate</param>
-        /// <param name="ring">The ring you want to start the os in</param>
-        /// <param name="rilcsize">The size of the array RILC</param>
         public void initd(long memsize)
         {
             if (init)
