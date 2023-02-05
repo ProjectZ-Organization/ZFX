@@ -27,7 +27,7 @@ namespace ZFX
         ///<summary>
         ///Stack pointer.
         ///</summary>
-        long sp;
+        long sp = 0;
 
         ///<summary>
         ///CPU clock cycle.
@@ -48,31 +48,31 @@ namespace ZFX
                     hlt();
                     break;
                 case 0x02:
-                    add((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    RAM[pc++] = RAM[pc + 2] + RAM[pc + 3];
                     Debug.WriteLine("add");
                     pc += 6;
                     break;
                 case 0x03:
-                    sub((int)RAM[pc +1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    RAM[pc++] = RAM[pc + 2] - RAM[pc + 3];
                     Debug.WriteLine("sub");
                     pc += 6;
                     break;
                 case 0x04:
-                    mul((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    RAM[pc++] = RAM[pc + 2] * RAM[pc + 3];
                     Debug.WriteLine("mul");
                     pc += 6;
                     break;
                 case 0x05:
-                    div((int)RAM[pc + 1], (int)RAM[pc + 2], (int)RAM[pc + 3]);
+                    RAM[pc++] = RAM[pc + 2] / RAM[pc + 3];
                     Debug.WriteLine("div");
                     pc += 6;
                     break;
                 case 0x06:
-                    inc((int)RAM[pc] + 1);
+                    RAM[pc++]++;
                     Debug.WriteLine("inc");
                     pc += 2;
                 case 0x07:
-                    dec((int)RAM[pc + 1]);
+                    RAM[pc++]--;
                     Debug.WriteLine("dec");
                     pc += 2;
                 case 0x08:
@@ -121,12 +121,14 @@ namespace ZFX
                 Environment.Exit(1);
             }
                       
-            RAM = new long[Memory];
+            this.RAM = new long[Memory];
             for(int i = 0; i < File.ReadAllBytes(ROM); i++) 
             {
-                RAM[i] = File.ReadAllBytes(ROM)[i];
+                if(i < 0x4999) continue;
+                this.RAM[i] = File.ReadAllBytes(ROM)[i];
             }
-            init = true;
+            this.sp = 0x5000;
+            this.init = true;
             ClockCycle();
         }
     }
