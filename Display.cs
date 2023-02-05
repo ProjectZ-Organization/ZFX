@@ -1,9 +1,8 @@
 using System;
-using System.Drawing;
 
 namespace ZFX
 {
-    public class Display : Device
+    public class Display
     {
         /// <summary>
         /// Defualt screen height.
@@ -15,18 +14,6 @@ namespace ZFX
         int ScreenWidth = 600;
 
         string Name = "Display";
-
-        void Tick() {
-            
-        }
-
-        byte Send() {
-
-        }
-
-        void Receive(byte Data) {
-
-        }
 
         public void ChangeResolution(int Height, int Width)
         {

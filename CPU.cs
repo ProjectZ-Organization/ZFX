@@ -44,26 +44,28 @@ namespace ZFX
                     pc++;
                     break;
                 case 0x01:
+                    pc = 0;
+                    sp = 0;
                     Debug.WriteLine("hlt");
-                    hlt();
+                    Environment.Exit(0);
                     break;
                 case 0x02:
-                    RAM[pc++] = RAM[pc + 2] + RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] + RAM[pc + 3];
                     Debug.WriteLine("add");
                     pc += 6;
                     break;
                 case 0x03:
-                    RAM[pc++] = RAM[pc + 2] - RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] + RAM[pc + 3];
                     Debug.WriteLine("sub");
                     pc += 6;
                     break;
                 case 0x04:
-                    RAM[pc++] = RAM[pc + 2] * RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] + RAM[pc + 3];
                     Debug.WriteLine("mul");
                     pc += 6;
                     break;
                 case 0x05:
-                    RAM[pc++] = RAM[pc + 2] / RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] + RAM[pc + 3];
                     Debug.WriteLine("div");
                     pc += 6;
                     break;
@@ -71,26 +73,35 @@ namespace ZFX
                     RAM[pc++]++;
                     Debug.WriteLine("inc");
                     pc += 2;
+                    break;
                 case 0x07:
                     RAM[pc++]--;
                     Debug.WriteLine("dec");
                     pc += 2;
+                    break;
                 case 0x08:
-                    RAM[pc++] = RAM[pc + 2] >> RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] >> (int)RAM[pc + 3];
                     Debug.WriteLine("rsh");
                     pc += 6;
+                    break;
                 case 0x09:
-                    RAM[pc++] = RAM[pc + 2] << RAM[pc + 3];
+                    RAM[pc++] = (int)RAM[pc + 2] << (int)RAM[pc + 3];
                     Debug.WriteLine("lsh");
                     pc += 6;
+                    break;
                 case 0x0a:
                     RAM[sp++] = RAM[pc++];
                     Debug.WriteLine("push");
                     pc++;
+                    break;
                 case 0x0b:
                     RAM[sp--] = RAM[pc++];
                     Debug.WriteLine("pop");
                     pc++;
+                    break;
+                case 0x0c:
+                    pc = RAM[pc++];
+                    break;
                 default:
                     Debug.WriteLine("Uknown instruction " + pc + ".");
                     throw new InvalidInstructionException();
@@ -112,17 +123,16 @@ namespace ZFX
         /// </summary>
         /// <param name="Memory">Amount of memory to allocate</param>
         /// <param name = "ROM">ROM filename</param>
-        /// <param name = "Gfx">Toggle graphics mode</param>
         private void initd(long Memory, string ROM, bool Gfx)
         {
             if (init)
             {
-                Console.WriteLine("Attempted to run init while emulator is already initialized.");
+                Console.WriteLine("Attempted to init while emulator is already initialized.");
                 Environment.Exit(1);
             }
                       
             this.RAM = new long[Memory];
-            for(int i = 0; i < File.ReadAllBytes(ROM); i++) 
+            for(int i = 0; i < File.ReadAllBytes(ROM)[i]; i++)
             {
                 if(i < 0x4999) continue;
                 this.RAM[i] = File.ReadAllBytes(ROM)[i];
