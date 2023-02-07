@@ -185,6 +185,15 @@ namespace ZFX
                     pc = RAM[sp--];
                     Debug.WriteLine("ret");
                     break;
+                case 0x21:
+                    RAM[pc++] = RAM[pc + 2];
+                    pc += 3;
+                    Debug.WriteLine("copy");
+                    break;
+                case 0x22:
+                    RAM[pc++] = RAM[pc + 2];
+                    Debug.WriteLine("load");
+                    break;
                 default:
                     Debug.WriteLine("Uknown instruction " + pc + ".");
                     throw new InvalidInstructionException();
@@ -196,9 +205,9 @@ namespace ZFX
         /// </summary>
         /// <param name="bitSystem">Size of RAM in KB</param>
         /// <param name = "FileName">ROM to run</param>
-        public CPU(long bitSystem, string FileName, bool Gfx)
+        public CPU(long MemoryAmount, string FileName, bool Gfx)
         {
-            initd(bitSystem * 1024, FileName, Gfx);
+            InternalInitialize(MemoryAmount * 1024, FileName, Gfx);
         }
 
         /// <summary>
@@ -206,7 +215,7 @@ namespace ZFX
         /// </summary>
         /// <param name="Memory">Amount of memory to allocate</param>
         /// <param name = "ROM">ROM filename</param>
-        private void initd(long Memory, string ROM, bool Gfx)
+        private void InternalInitialize(long Memory, string ROM, bool Gfx)
         {
             if (init)
             {
@@ -218,6 +227,7 @@ namespace ZFX
             for(int i = 0; i < File.ReadAllBytes(ROM)[i]; i++)
             {
                 if(i < 0x4999) continue;
+                else break;
                 this.RAM[i] = File.ReadAllBytes(ROM)[i];
             }
             this.sp = 0x5000;
