@@ -10,6 +10,7 @@ namespace ZFX {
         ///Read an index from memory.
         ///</summary>
         public long Read(int Index) {
+            if(!Initialized) return;
             return RAM[Index];
         }
 
@@ -17,12 +18,18 @@ namespace ZFX {
         ///Write to a memory index.
         ///</summary>
         public void Write(int Index, long Value) {
+            if(!Initialized) return;
+            RAM[Index] = Value;
+        }
+
+        public void Write(long Index, long Value) {
+            if(!Initialized) return;
             RAM[Index] = Value;
         }
 
         public Memory(int Memory) {
             if(Initialized) return;
-            RAM = Memory;
+            RAM = new long[Memory];
             Initialized = true;
         }
     }

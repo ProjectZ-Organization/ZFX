@@ -5,11 +5,16 @@ using ZFX.CPU;
 
 namespace ZFX {
     class Instance {
-        public Instance(int Cores, int Memory, string ROM) {
+        /// <summary>
+        /// System Memory.
+        /// </summary>
+        private Memory SystemMemory;
+        public Instance(int Cores, int MemoryCount, string ROM) {
             CPU[] Processors = new CPU {Cores};
             foreach(var Processor in Processors) {
                 //FIXME: Not all cores execute the same program.
-                Thread CurrentProcessorThread = new Thread(new ThreadStart(new CPU(Memory, ROM)));
+                SystemMemory = new Memory(MemoryCount);
+                Thread CurrentProcessorThread = new Thread(new ThreadStart(Processor(ROM)));
                 CurrentProcessorThread.Start();
             }
         }
