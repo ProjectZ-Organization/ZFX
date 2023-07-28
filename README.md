@@ -1,4 +1,4 @@
-#[DISCONTINUED] Please do not adress this repo.
+# [DISCONTINUED] Please do not adress this repo.
 
 # ZFX
 The Z Framework source tree
